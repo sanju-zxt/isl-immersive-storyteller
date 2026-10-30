@@ -1,0 +1,50 @@
+{
+  "appName": "Sign Language Translation",
+  "navigation": {
+    "skipToContent": "Skip to main content",
+    "mainContent": "Main content",
+    "statusHUD": "Status HUD",
+    "closePanel": "Close panel"
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "highContrast": "High Contrast"
+  },
+  "camera": {
+    "panelTitle": "Camera Feed",
+    "live": "Live",
+    "blocked": "Blocked",
+    "waiting": "Waiting",
+    "startButton": "Start",
+    "stopButton": "Stop",
+    "selectDevice": "Select camera device"
+  },
+  "avatar": {
+    "panelTitle": "3D Avatar",
+    "description": "Real-time sign language avatar translation"
+  },
+  "transcript": {
+    "panelTitle": "Transcript",
+    "subtitle": "Sign-to-word alignment",
+    "confidence": "Confidence",
+    "inlineCorrection": "Inline correction",
+    "applyButton": "Apply"
+  },
+  "hud": {
+    "fps": "FPS",
+    "latency": "Latency",
+    "confidence": "Confidence",
+    "dropped": "Dropped",
+    "liveGraphAlt": "Live latency graph"
+  },
+  "accessibility": {
+    "themeSwitcher": "Theme settings",
+    "languageSwitcher": "Select language",
+    "keyboardShortcuts": "Keyboard shortcuts"
+  },
+  "pwa": {
+    "installButton": "Install app",
+    "installedMessage": "App is installed"
+  }
+}

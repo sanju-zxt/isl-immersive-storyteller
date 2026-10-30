@@ -85,7 +85,7 @@ const useAnimationStore = create<AnimationControllerStore>((set, get) => ({
   }
 }))
 
-export class AnimationController {
+class AnimationController {
   private gltf: Group
   private mixer: AnimationMixer
   private actions: Map<string, any> = new Map()
@@ -394,6 +394,6 @@ const useAnimationController = (gltfPath: string) => {
   }
 }
 
-export default useAnimationController
 export { AnimationController, useAnimationStore, useAnimationController }
+export default useAnimationController
 export type { MediaPipeLandmark, MediaPipeLandmarks }

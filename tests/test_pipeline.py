@@ -22,12 +22,13 @@ def test_data_is_valid():
     assert "churn" in df.columns
 
 
-def test_missing_values_are_rejected(tmp_path):
+def test_missing_values_are_rejected():
     df = pd.read_csv(DATA_PATH)
 
     df.loc[0, "tenure"] = np.nan
 
-    bad_file = tmp_path / "bad_customers.csv"
+    bad_file = Path(".pytest-tmp/bad_customers.csv")
+    bad_file.parent.mkdir(parents=True, exist_ok=True)
     df.to_csv(bad_file, index=False)
 
     with pytest.raises(ValueError, match="missing values"):
