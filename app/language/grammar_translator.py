@@ -7,6 +7,11 @@ from __future__ import annotations
 from typing import List, Dict, Any, Optional
 import xml.etree.ElementTree as ET
 
+try:
+    import spacy
+except ImportError:
+    spacy = None
+
 
 class ISLGrammar:
     """Indian Sign Language grammar rules."""
@@ -43,12 +48,33 @@ class GrammarTranslator:
         }
         self.plugin = self.grammar_plugins.get(plugin, ISLGrammar())
 
+    def _parse_spacy_ud(self, text: str) -> List[Dict[str, Any]]:
+        if spacy is None:
+            return []
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            return []
+        doc = nlp(text)
+        parses = []
+        for token in doc:
+            parses.append({
+                "text": token.text,
+                "lemma": token.lemma_,
+                "pos": token.pos_,
+                "dep": token.dep_,
+                "head": token.head.text,
+                "children": [child.text for child in token.children],
+            })
+        return parses
+
     def translate(self, text: str) -> List[Dict[str, Any]]:
-        # Minimal stub returning structured animation sequence
-        return []
+        ud_parse = self._parse_spacy_ud(text)
+        return [{"ud_parse": ud_parse}]
 
     def translate_full(self, text: str) -> Dict[str, Any]:
-        gloss = ["HELLO", "WORLD"]
+        ud_parse = self._parse_spacy_ud(text)
+        gloss = [token["lemma"].upper() for token in ud_parse if token["pos"] in ("VERB", "NOUN", "ADJ")] if ud_parse else ["HELLO", "WORLD"]
         gloss = self.plugin.apply(gloss)
         hamsys = self.to_hamnosys(gloss)
         sigml = self.to_sigml(hamsys)
@@ -60,6 +86,8 @@ class GrammarTranslator:
             "sigml": sigml,
             "animation_segments": animation,
             "fallback_chain": fallback,
+            "ud_parse": ud_parse,
+            "resource_refs": {"signbank": "https://signbank.org", "hamnosys": "https://www.sign-lang.uni-hamburg.de/hamnosys/", "sigml": "https://vhg.cmp.uea.ac.uk/tech/jasco/sigml/"},
         }
 
     def to_hamnosys(self, gloss_sequence: List[str]) -> List[str]:

@@ -8,3 +8,4 @@ dvc==3.56.0
 fastapi==0.115.4
 uvicorn==0.32.0
 httpx==0.28.1
+spacy==3.7.5

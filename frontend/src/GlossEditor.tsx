@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 
 export interface GlossItem {
   word: string;
@@ -16,10 +18,18 @@ export const GlossEditor: React.FC<GlossEditorProps> = ({
 }) => {
   const [items, setItems] = useState<string[]>(initialGloss);
 
+  const editor = useEditor({
+    extensions: [StarterKit],
+    content: `<p>Gloss sequence: ${items.join(", ")}</p>`,
+  });
+
   const handleEdit = (index: number, value: string) => {
     const next = [...items];
     next[index] = value;
     setItems(next);
+    if (editor) {
+      editor.commands.setContent(`<p>Gloss sequence: ${next.join(", ")}</p>`);
+    }
   };
 
   const handleConfirm = () => {
@@ -28,8 +38,11 @@ export const GlossEditor: React.FC<GlossEditorProps> = ({
 
   return (
     <div className="gloss-editor">
-      <h3>Gloss Sequence Editor</h3>
+      <h3>Gloss Sequence Editor (TipTap)</h3>
       <p>Correct the gloss sequence before animation.</p>
+      <div className="editor-content">
+        <EditorContent editor={editor} />
+      </div>
       <ul>
         {items.map((item, idx) => (
           <li key={idx}>
