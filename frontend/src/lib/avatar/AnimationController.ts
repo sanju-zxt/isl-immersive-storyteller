@@ -374,6 +374,7 @@ const useAnimationController = (gltfPath: string) => {
   return {
     isLoaded,
     controller: controllerRef.current,
+    scene: gltfScene as Group,
     clips: clips,
     actions: actions,
     play: useCallback((clipName: string, fadeTime?: number) => 

@@ -5,10 +5,133 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Best-in-class accessible sign language translation with 3D avatar" />
   <meta name="theme-color" content="#0ea5e9" />
-  <title>Sign Language Translation</title>
+  <title>SignBridge — Real-Time Sign Language Translation</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    html { scroll-behavior: smooth; font-family: 'Inter', system-ui, Segoe UI, sans-serif; }
+    body { font-family: 'Inter', system-ui, Segoe UI, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    .min-h-screen { min-height: 100vh; }
+    .bg-gradient-to-br { background: linear-gradient(to bottom right, #f8fafc 0%, #eff6ff 40%, #f0fdf4 100%); }
+    .bg-gradient-to-r { background: linear-gradient(to right, #ccfbf1 0%, #dbeafe 100%); }
+    .bg-gradient-to-b { background: linear-gradient(to bottom, #f0fdfa 0%, #f0f9ff 100%); }
+    .text-slate-900 { color: #0f172a; }
+    .text-slate-800 { color: #1e293b; }
+    .text-slate-600 { color: #475569; }
+    .text-slate-400 { color: #94a3b8; }
+    .text-emerald-600 { color: #059669; }
+    .text-teal-700 { color: #0f766e; }
+    .text-white { color: #fff; }
+    .text-xs { font-size: 0.75rem; line-height: 1rem; }
+    .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+    .text-base { font-size: 1rem; line-height: 1.5rem; }
+    .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+    .text-5xl { font-size: 3rem; line-height: 1; }
+    .font-sans { font-family: 'Inter', system-ui, sans-serif; }
+    .font-bold { font-weight: 700; }
+    .font-extrabold { font-weight: 800; }
+    .font-black { font-weight: 900; }
+    .tracking-tight { letter-spacing: -0.025em; }
+    .tracking-wider { letter-spacing: 0.05em; }
+    .tracking-widest { letter-spacing: 0.1em; }
+    .uppercase { text-transform: uppercase; }
+    .rounded-xl { border-radius: 0.75rem; }
+    .rounded-2xl { border-radius: 1rem; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-lg { border-radius: 0.5rem; }
+    .shadow-sm { box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
+    .shadow-md { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+    .shadow-lg { box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+    .shadow-xl { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+    .shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+    .border { border-width: 1px; border-style: solid; }
+    .border-slate-200 { border-color: #e2e8f0; }
+    .border-slate-100 { border-color: #f1f5f9; }
+    .border-white { border-color: rgba(255,255,255,0.1); }
+    .border-teal-200 { border-color: #99f6e4; }
+    .border-teal-100 { border-color: #ccfbf1; }
+    .overflow-hidden { overflow: hidden; }
+    .overflow-y-auto { overflow-y: auto; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-1 { flex: 1 1 0%; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .gap-2 { gap: 0.5rem; }
+    .gap-3 { gap: 0.75rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-5 { gap: 1.25rem; }
+    .gap-6 { gap: 1.5rem; }
+    .p-2 { padding: 0.5rem; }
+    .p-3 { padding: 0.75rem; }
+    .p-4 { padding: 1rem; }
+    .p-5 { padding: 1.25rem; }
+    .px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
+    .px-3 { padding-left: 0.75rem; padding-right: 0.75rem; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+    .py-1 { padding-top: 0.25rem; padding-bottom: 0.25rem; }
+    .py-1\.5 { padding-top: 0.375rem; padding-bottom: 0.375rem; }
+    .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+    .py-2\.5 { padding-top: 0.625rem; padding-bottom: 0.625rem; }
+    .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+    .py-3\.5 { padding-top: 0.875rem; padding-bottom: 0.875rem; }
+    .w-full { width: 100%; }
+    .w-2 { width: 0.5rem; }
+    .w-8 { width: 2rem; }
+    .w-9 { width: 2.25rem; }
+    .w-10 { width: 2.5rem; }
+    .w-56 { width: 14rem; }
+    .h-2 { height: 0.5rem; }
+    .h-8 { height: 2rem; }
+    .h-9 { height: 2.25rem; }
+    .h-10 { height: 2.5rem; }
+    .h-14 { height: 3.5rem; }
+    .h-16 { height: 4rem; }
+    .h-full { height: 100%; }
+    .min-w-\[300px\] { min-width: 300px; }
+    .min-w-\[400px\] { min-width: 400px; }
+    .min-w-\[320px\] { min-width: 320px; }
+    .max-w-\[600px\] { max-width: 600px; }
+    .max-w-\[700px\] { max-width: 700px; }
+    .max-w-\[800px\] { max-width: 800px; }
+    .max-w-\[900px\] { max-width: 900px; }
+    .bg-gradient-to-r { background: linear-gradient(to right, var(--tw-gradient-stops)); }
+    .bg-gradient-to-b { background: linear-gradient(to bottom, var(--tw-gradient-stops)); }
+    .bg-gradient-to-br { background: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+    .backdrop-blur-sm { backdrop-filter: blur(4px); }
+    .backdrop-blur-md { backdrop-filter: blur(12px); }
+    .backdrop-blur-xl { backdrop-filter: blur(24px); }
+    .sticky { position: sticky; }
+    .fixed { position: fixed; }
+    .top-0 { top: 0; }
+    .left-0 { left: 0; }
+    .right-0 { right: 0; }
+    .z-10 { z-index: 10; }
+    .z-50 { z-index: 50; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .bottom-2 { bottom: 0.5rem; }
+    .bottom-4 { bottom: 1rem; }
+    .left-4 { left: 1rem; }
+    .right-4 { right: 1rem; }
+    .top-4 { top: 1rem; }
+    .text-right { text-align: right; }
+    .cursor-pointer { cursor: pointer; }
+    .transition-all { transition: all 0.2s ease; }
+    .shadow-inner { box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.06); }
+    .hover\:scale-\[1\.02\] { transition: transform 0.15s ease; }
+    .hover\:scale-\[1\.02\]:hover { transform: scale(1.02); }
+    .hover\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); }
+    .hover\:shadow-xl:hover { box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); }
+    .shadow-\[0_0_6px_rgba\(52\,211\,153\,0\.6\)\] { box-shadow: 0 0 6px rgba(52,211,153,0.6); }
+    .shadow-\[0_0_8px_rgba\(52\,211\,153\,0\.5\)\] { box-shadow: 0 0 8px rgba(52,211,153,0.5); }
+    .shadow-\[4px_0_24px_rgba\(0\,0\,0\,0\.02\)\] { box-shadow: 4px 0 24px rgba(0,0,0,0.02); }
+    .shadow-\[0_-4px_20px_rgba\(0\,0\,0\,0\.05\)\] { box-shadow: 0 -4px 20px rgba(0,0,0,0.05); }
+    .shadow-blue-900\/5 { box-shadow: 0 20px 25px -5px rgba(30,58,138,0.05); }
+    .shadow-blue-900\/20 { box-shadow: 0 25px 50px -12px rgba(30,58,138,0.2); }
+    .shadow-teal-500\/20 { box-shadow: 0 10px 15px -3px rgba(20,184,166,0.2); }
+    .shadow-teal-500\/30 { box-shadow: 0 4px 6px -1px rgba(20,184,166,0.3); }
+    .shadow-red-500\/30 { box-shadow: 0 4px 6px -1px rgba(239,68,68,0.3); }
+    .shadow-emerald-400\/50 { box-shadow: 0 0 6px rgba(52,211,153,0.5); }
+  </style>
 </head>
-<body>
-  <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
-</body>
-</html>
