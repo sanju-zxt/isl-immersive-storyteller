@@ -8,6 +8,10 @@ from pydantic import BaseModel, Field
 
 router = APIRouter()
 
+# Optional: voice cloning requires speaker enrollment audio and feature extraction
+# Not fully implemented; requires additional TTS model with speaker conditioning
+CLONE_SUPPORTED = False
+
 SUPPORTED_VOICES = {
     "en_US-less-medium": "en_US/less-medium.onnx",
     "en_US-amy-medium": "en_US/amy/medium.onnx",

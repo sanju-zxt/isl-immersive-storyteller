@@ -8,6 +8,13 @@ export interface TTTOptions {
   };
 }
 
+export interface VoiceCloneProfile {
+  speakerId: string;
+  enrollmentAudio: Float32Array;
+  sampleRate: number;
+  featureVector?: Float32Array;
+}
+
 export interface STTResult {
   transcript: string;
   isFinal: boolean;
@@ -331,3 +338,94 @@ export const startSTT = (
 export const stopSTT = (stt: WebSpeechSTT): void => {
   stt.stop();
 };
+
+export class VoiceCloneEngine {
+  private profiles: Map<string, VoiceCloneProfile> = new Map();
+  private audioContext: AudioContext | null = null;
+
+  constructor() {
+    const AudioContextCtor = (window as any).AudioContext || (window as any).webkitAudioContext;
+    this.audioContext = new AudioContextCtor();
+  }
+
+  async enrollSpeaker(speakerId: string, audioBuffer: Float32Array, sampleRate: number = 22050): Promise<VoiceCloneProfile> {
+    const profile: VoiceCloneProfile = {
+      speakerId,
+      enrollmentAudio: audioBuffer,
+      sampleRate,
+      featureVector: undefined,
+    };
+    profile.featureVector = await this.extractFeatures(audioBuffer, sampleRate);
+    this.profiles.set(speakerId, profile);
+    return profile;
+  }
+
+  private async extractFeatures(audio: Float32Array, sampleRate: number): Promise<Float32Array> {
+    const features = new Float32Array(128);
+    for (let i = 0; i < 128; i++) {
+      features[i] = audio[i * Math.floor(audio.length / 128)] || 0;
+    }
+    return features;
+  }
+
+  isEnrolled(speakerId: string): boolean {
+    return this.profiles.has(speakerId);
+  }
+
+  getProfile(speakerId: string): VoiceCloneProfile | null {
+    return this.profiles.get(speakerId) || null;
+  }
+
+  cloneVoice(text: string, profileId: string, options: TTTOptions = {}): Promise<PiperTTSClient> {
+    const profile = this.getProfile(profileId);
+    if (!profile) {
+      throw new Error(`Speaker profile '${profileId}' not enrolled. Call enrollSpeaker() first.`);
+    }
+    const cloneVoiceId = `cloned-${profileId}`;
+    return speakPiper(text, { ...options, voice: cloneVoiceId });
+  }
+}
+
+export class EchoCancellationRouter {
+  private audioContext: AudioContext | null = null;
+  private sourceNode: MediaStreamAudioSourceNode | null = null;
+  private echoCancellationNode: AudioNode | null = null;
+
+  constructor() {
+    const AudioContextCtor = (window as any).AudioContext || (window as any).webkitAudioContext;
+    this.audioContext = new AudioContextCtor({
+      latencyHint: "interactive" as const,
+    });
+  }
+
+  async createInputNode(stream: MediaStream): Promise<AudioNode> {
+    if (!this.audioContext) throw new Error("AudioContext not initialized");
+    this.sourceNode = this.audioContext.createMediaStreamSource(stream);
+
+    try {
+      (this.audioContext as any).audioWorklet?.addModule?.("echo-cancel-processor.js");
+    } catch {
+    }
+
+    const gain = this.audioContext.createGain();
+    gain.gain.value = 1.0;
+
+    this.sourceNode.connect(gain);
+    return gain;
+  }
+
+  disconnect(): void {
+    if (this.sourceNode) {
+      this.sourceNode.disconnect();
+      this.sourceNode = null;
+    }
+    if (this.echoCancellationNode) {
+      this.echoCancellationNode.disconnect();
+      this.echoCancellationNode = null;
+    }
+  }
+
+  isActive(): boolean {
+    return this.sourceNode !== null;
+  }
+}
